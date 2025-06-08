@@ -1,18 +1,18 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(PixelSandCompute)
+project(FallingSandCompute)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 add_subdirectory(SDL)
 
-add_executable(PixelSandCompute)
+add_executable(FallingSandCompute)
 
-target_include_directories(PixelSandCompute PUBLIC imgui imgui/backends)
-target_link_libraries(PixelSandCompute PUBLIC SDL3::SDL3)
+target_include_directories(FallingSandCompute PUBLIC imgui imgui/backends)
+target_link_libraries(FallingSandCompute PUBLIC SDL3::SDL3)
 
-target_sources(PixelSandCompute 
+target_sources(FallingSandCompute 
 PUBLIC 
     main.cpp
     imgui/imgui.cpp
@@ -32,4 +32,4 @@ PUBLIC
     imgui/backends/imgui_impl_sdlgpu3_shaders.h
 )
 
-set_property(TARGET PixelSandCompute PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+set_property(TARGET FallingSandCompute PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")

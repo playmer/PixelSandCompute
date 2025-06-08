@@ -187,7 +187,7 @@ SDL_GPUComputePipeline* CreateComputePipelineFromShader(
 
 SDL_AppResult InitSDLStuff(AppData* app)
 {
-	app->mWindow = SDL_CreateWindow("PixelSandCompute", cWidth, cHeight, 0);
+	app->mWindow = SDL_CreateWindow("FallingSandCompute", cWidth, cHeight, 0);
 	app->mDevice = SDL_CreateGPUDevice(
 		SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_MSL,
 		true,
