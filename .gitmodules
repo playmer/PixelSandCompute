@@ -1,0 +1,8 @@
+[submodule "SDL"]
+	path = SDL
+	url = https://github.com/libsdl-org/SDL.git
+	branch = release-3.2.x
+[submodule "imgui"]
+	path = imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = 97428e8ac99e339ce05eee531cf55b77b29ea709
