@@ -520,17 +520,9 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 	float x, y;
 	SDL_MouseButtonFlags flags = SDL_GetMouseState(&x, &y);
 
-	printf("{%f, %f} %s\n", x, y, flags & SDL_BUTTON_LMASK ? "true":"false");
-
 	if (flags & SDL_BUTTON_LMASK) {
 		app->mBlocks[(y * cWidth) + x] = BlockType::Stone;
 	}
-
-
-
-
-
-
 
 	if (Render(app) != SDL_APP_CONTINUE) {
 		return SDL_APP_FAILURE;
