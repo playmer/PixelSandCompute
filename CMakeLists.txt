@@ -31,3 +31,5 @@ PUBLIC
     imgui/backends/imgui_impl_sdlgpu3.h
     imgui/backends/imgui_impl_sdlgpu3_shaders.h
 )
+
+set_property(TARGET PixelSandCompute PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")

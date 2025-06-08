@@ -2,6 +2,9 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL.h>
 
+#include "imgui_impl_sdl3.h"
+#include "imgui_impl_sdlgpu3.h"
+
 #include <array>
 #include <vector>
 
@@ -368,10 +371,32 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 	AppData* app = new AppData;
 	*appstate = (void*)app;
 
+	// SDL/Renderer
 	if (InitSDLStuff(app) != SDL_APP_CONTINUE) {
 		return SDL_APP_FAILURE;
 	}
 
+	// ImGui
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsLight();
+
+	ImGui_ImplSDL3_InitForSDLGPU(app->mWindow);
+	ImGui_ImplSDLGPU3_InitInfo init_info = {};
+	init_info.Device = app->mDevice;
+	init_info.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(app->mDevice, app->mWindow);
+	init_info.MSAASamples = SDL_GPU_SAMPLECOUNT_1;
+	ImGui_ImplSDLGPU3_Init(&init_info);
+
+
+	// Game stuff
 	app->mBlocks.resize(cWidth * cHeight, BlockType::Air);
 
 	for (size_t i = (cWidth * (cHeight * .5f)); i < (cWidth * (cHeight * .75f)); ++i) {
@@ -403,6 +428,13 @@ SDL_AppResult Render(AppData* app)
 
 	if (swapchainTexture != NULL)
 	{
+		//////////////////////
+		// ImGui Upload
+        // Rendering
+		ImGui::Render();
+		ImDrawData* draw_data = ImGui::GetDrawData();
+
+		Imgui_ImplSDLGPU3_PrepareDrawData(draw_data, commandBuffer);
 
 		//////////////////////
 		// Copy Pass
@@ -504,6 +536,10 @@ SDL_AppResult Render(AppData* app)
 		SDL_BindGPUFragmentSamplers(renderPass, 0, &textureSamplerBinding, 1);
 		SDL_DrawGPUPrimitives(renderPass, 6, 1, 0, 0);
 
+
+		// Render ImGui
+		ImGui_ImplSDLGPU3_RenderDrawData(draw_data, commandBuffer, renderPass);
+
 		SDL_EndGPURenderPass(renderPass);
 	}
 
@@ -517,6 +553,23 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 {
 	AppData* app = (AppData*)appstate;
 
+	// ImGui
+	ImGui_ImplSDLGPU3_NewFrame();
+	ImGui_ImplSDL3_NewFrame();
+	ImGui::NewFrame();
+
+	{
+		static float f = 0.0f;
+		static int counter = 0;
+
+		ImGuiIO& io = ImGui::GetIO();;
+
+		ImGui::Begin("ImGui Stuff");
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+		ImGui::End();
+	}
+
+	// Game Update
 	float x, y;
 	SDL_MouseButtonFlags flags = SDL_GetMouseState(&x, &y);
 
@@ -534,6 +587,8 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 {
 	AppData* app = (AppData*)appstate;
+
+	ImGui_ImplSDL3_ProcessEvent(event);
 
 	if (event->common.type == SDL_EVENT_QUIT) {
 		return SDL_APP_SUCCESS;
